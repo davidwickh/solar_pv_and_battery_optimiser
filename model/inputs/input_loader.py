@@ -27,6 +27,7 @@ class InputLoader:
         :param file_path: Path to the file to read
         :return: Pandas dataframe containing the data
         """
+        logger.info(f"Reading file at {file_path} 📖")
         try:
             if self.pre_processor is not None:
                 return self.pre_processor.pre_process(pd.read_csv(file_path))

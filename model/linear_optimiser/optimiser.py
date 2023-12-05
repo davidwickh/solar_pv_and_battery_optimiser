@@ -1,9 +1,11 @@
 from typing import Optional
 
+import matplotlib.pyplot as plt
 import pandas as pd
 import pulp as pl
+from pulp import LpStatus
 
-from model.constants import ENERGY_DEMAND, SOLAR_GENERATION, OptimisationObjectives, SOLAR_IRRADIANCE
+from model.constants import ENERGY_DEMAND, OptimisationObjectives, SOLAR_IRRADIANCE
 
 
 class Optimiser:
@@ -23,7 +25,7 @@ class Optimiser:
             time_slices: range,
             solar_capacity: Optional[float] = None,
             solar_efficiency: Optional[float] = 0.15,
-    ):
+    ) -> None:
         """
         Creates the optimisation problem.
         :return: None
@@ -39,27 +41,27 @@ class Optimiser:
         # Define variables
         # Renewable electricity flow
         renewable_electricity_to_house = pl.LpVariable.dicts(
-            name="renewable_electricity_to_house_{_t}",
+            name="renewable_electricity_to_house",
             indices=time_slices,
             lowBound=0,
             cat="Continuous",
         )
         renewable_electricity_to_battery = pl.LpVariable.dicts(
-            name="renewable_electricity_to_battery_{_t}",
+            name="renewable_electricity_to_battery",
             indices=time_slices,
             lowBound=0,
             cat="Continuous",
         )
         # Battery electricity flow
         battery_electricity_to_house = pl.LpVariable.dicts(
-            name="battery_electricity_to_house_{_t}",
+            name="battery_electricity_to_house",
             indices=time_slices,
             lowBound=0,
             cat="Continuous",
         )
         # Battery state of charge
         battery_state_of_charge = pl.LpVariable.dicts(
-            name="battery_state_of_charge_{_t}",
+            name="battery_state_of_charge",
             indices=time_slices,
             lowBound=0,
             cat="Continuous",
@@ -72,13 +74,13 @@ class Optimiser:
         )
         if optimisation_objective == OptimisationObjectives.MINIMISE_BATTERY_AND_SOLAR_COST:
             # Solar capacity
-            solar_capacity_var = pl.LpVariable(
+            solar_size = pl.LpVariable(
                 name="solar_capacity",
                 lowBound=0,
                 cat="Continuous",
             )
         elif optimisation_objective == OptimisationObjectives.MINIMISE_BATTERY_CAP:
-            solar_capacity_var = solar_capacity
+            solar_size = solar_capacity
         else:
             raise ValueError(f"Unknown optimisation objective: {optimisation_objective}")
 
@@ -93,14 +95,8 @@ class Optimiser:
         # Energy flow constraints
         for _t in time_slices:
             # Solar generation
-            solar_generation = solar_irradiance[SOLAR_IRRADIANCE][_t] * solar_capacity_var * solar_efficiency
+            solar_generation = solar_irradiance[SOLAR_IRRADIANCE][_t] * solar_size * solar_efficiency * 0.5
             energy_demand_at_time = energy_demand.loc[_t, ENERGY_DEMAND]
-
-            # Variables
-            renewable_electricity_to_house_t = renewable_electricity_to_house[_t]
-            battery_electricity_to_house_t = battery_electricity_to_house[_t]
-
-            # Add constraints
 
             # Renewable electricity flow to house and battery must equal renewable generation
             self.problem += (
@@ -108,13 +104,14 @@ class Optimiser:
                     + renewable_electricity_to_battery[_t] <= solar_generation
             )
             # Electricity demand from house must be met
-            # self.problem += renewable_electricity_to_house_t + battery_electricity_to_house_t == energy_demand_at_time
+            self.problem += renewable_electricity_to_house[_t] + battery_electricity_to_house[_t] == energy_demand_at_time
+
             # Battery state of charge
-            if _t == 0: # Initial battery state of charge
+            if _t == 0:  # Initial battery state of charge
                 self.problem += battery_state_of_charge[_t] == battery_initial_capacity
             else:
                 # Battery state of charge must be equal to the previous state plus the electricity flow to the battery
-                    # minus the electricity flow from the battery and the degradation
+                # minus the electricity flow from the battery and the degradation
                 battery_degradation = battery_degradation_rate * battery_state_of_charge[_t - 1]
                 self.problem += (
                         battery_state_of_charge[_t]
@@ -126,15 +123,45 @@ class Optimiser:
             # Battery capacity must be greater than or equal to the battery state of charge
             self.problem += battery_state_of_charge[_t] <= battery_capacity
 
-
-
-    def solve(self):
-        """
-        Solves the optimisation problem.
-        :return: None
-        """
         self.problem.solve()
-        print(pl.LpStatus[self.problem.status])
-        print(pl.value(self.problem.objective))
-        for v in self.problem.variables():
-            print(v.name, "=", v.varValue)
+
+        # Print results
+        print(f"Status: {LpStatus[self.problem.status]}")
+        print(f"Objective: {pl.value(self.problem.objective)}")
+        print(f"Battery capacity: {pl.value(battery_capacity)}")
+        print(f"Solar size: {pl.value(solar_size)}")
+        print(f"Renewable electricity to house: {sum(pl.value(renewable_electricity_to_house[t]) for t in time_slices)}")
+        print(f"Renewable electricity to battery: {sum(pl.value(renewable_electricity_to_battery[t]) for t in time_slices)}")
+        print(f"Battery electricity to house: {sum(pl.value(battery_electricity_to_house[t]) for t in time_slices)}")
+        print(f"Total House Demand: {sum(energy_demand.loc[t, ENERGY_DEMAND] for t in time_slices)}")
+
+        # plot results
+        plt.figure(figsize=(10, 5))
+        plt.plot([pl.value(battery_state_of_charge[t]) for t in time_slices], label="Battery state of charge")
+        plt.plot([pl.value(renewable_electricity_to_house[t]) for t in time_slices], label="Renewable electricity to house")
+        plt.plot([pl.value(battery_electricity_to_house[t]) for t in time_slices], label="Battery electricity to house")
+        plt.plot([pl.value(battery_electricity_to_house[t]) + pl.value(renewable_electricity_to_house[t]) for t in time_slices], label="Total electricity to house")
+        plt.plot([pl.value(battery_electricity_to_house[t]) + pl.value(renewable_electricity_to_house[t]) - energy_demand.loc[t, ENERGY_DEMAND] for t in time_slices], label="Excess electricity")
+        plt.legend()
+        plt.show()
+
+
+
+if __name__ == "__main__":
+    energy_demand = pd.read_csv(
+        r"C:\Users\David.Wickham\PycharmProjects\solar_pv_and_battery_optimiser\energy_demand.csv"
+    )
+    solar_irradiance = pd.read_csv(
+        r"C:\Users\David.Wickham\PycharmProjects\solar_pv_and_battery_optimiser\solar_irradiance.csv"
+    )
+    optimiser = Optimiser()
+    optimiser.create_optimisation_problem(
+        energy_demand=energy_demand,
+        solar_irradiance=solar_irradiance,
+        battery_initial_capacity=0,
+        solar_capacity=10000000000000000000,
+        optimisation_objective=OptimisationObjectives.MINIMISE_BATTERY_CAP,
+        solar_efficiency=0.15,
+        battery_degradation_rate=0.01,
+        time_slices=range(len(energy_demand)),
+    )
