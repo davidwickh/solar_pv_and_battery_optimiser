@@ -1,0 +1,6 @@
+requirements.txt
+pytest
+black
+pylint
+isort
+numpy
