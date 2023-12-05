@@ -9,6 +9,7 @@ from model.inputs.pre_processing import PreProcessorBase
 
 logger = logging.getLogger(__name__)
 
+
 class InputLoader:
     """
     Class responsible for containing all code associated with reading input data

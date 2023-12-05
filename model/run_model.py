@@ -3,16 +3,19 @@ Main
 """
 import gc
 import logging
+import tempfile
 from pathlib import Path
 
 import pandas as pd
 
 from arguments import Arguments
-from model.constants import DATE_TIME, OptimisationObjectives
+from model.constants import OptimisationObjectives
 from model.inputs.input_loader import InputLoader
-from model.inputs.pre_processing import MatchTimeStampsPreProcessor, FilterNonHalfHourlyData
+from model.inputs.pre_processing import (
+    FilterNonHalfHourlyData,
+    MatchTimeStampsPreProcessor,
+)
 from model.linear_optimiser.optimiser import Optimiser
-import tempfile
 
 logger = logging.getLogger(__name__)
 
@@ -39,11 +42,13 @@ def run_model(args: Arguments):
     logger.info("Creating temporary directory to store pre-processed data")
     temp_dir = tempfile.mkdtemp()
     solar_irradiance.to_csv(Path(temp_dir, "solar_irradiance.csv"), index=False)
-    energy_demand_profile.to_csv(Path(temp_dir, "energy_demand_profile.csv"), index=False)
+    energy_demand_profile.to_csv(
+        Path(temp_dir, "energy_demand_profile.csv"), index=False
+    )
 
+    # Delete the dataframes to free up memory
     del solar_irradiance
     del energy_demand_profile
-
     gc.collect()
 
     # read the pre-processed data

@@ -119,7 +119,10 @@ class MatchTimeStampsPreProcessor(PreProcessorBase):
 
         # merge the solar irradiance data with the energy demand data
         shifted_and_repeated_solar_irradiance = self.energy_demand_profile.merge(
-            shifted_and_repeated_solar_irradiance, left_index=True, right_index=True, how="left"
+            shifted_and_repeated_solar_irradiance,
+            left_index=True,
+            right_index=True,
+            how="left",
         )
         # If there are any missing values raise an error
         if shifted_and_repeated_solar_irradiance.isna().values.any():
@@ -127,7 +130,9 @@ class MatchTimeStampsPreProcessor(PreProcessorBase):
                 "There are missing values in the energy demand profile after merging the solar irradiance data"
             )
         # Drop the consumption column
-        shifted_and_repeated_solar_irradiance = shifted_and_repeated_solar_irradiance[orginal_columns]
+        shifted_and_repeated_solar_irradiance = shifted_and_repeated_solar_irradiance[
+            orginal_columns
+        ]
         # Reset the index
         shifted_and_repeated_solar_irradiance.reset_index(inplace=True)
 

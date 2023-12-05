@@ -29,11 +29,12 @@ class DateTimeToNumeric:
     """
     Dataclass that converts a datetime object to a numeric value.
     """
+
     datetime_column: pd.Series
     mapping: dict
 
     @classmethod
-    def create(cls, datetime_column: pd.Series) -> 'DateTimeToNumeric':
+    def create(cls, datetime_column: pd.Series) -> "DateTimeToNumeric":
         """
         Creates a DateTimeToNumeric object. Take a datetime column and created a mapping between the datetime and
         numeric values.
@@ -50,7 +51,9 @@ class DateTimeToNumeric:
         """
         return data[DATE_TIME].map(self.mapping)
 
-    def convert_to_datetime(self, data: pd.DataFrame, numeric_column: pd.Series) -> pd.DataFrame:
+    def convert_to_datetime(
+        self, data: pd.DataFrame, numeric_column: pd.Series
+    ) -> pd.DataFrame:
         """
         Converts the numeric column to a datetime column.
         :param numeric_column:
