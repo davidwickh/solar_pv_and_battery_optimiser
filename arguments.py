@@ -4,9 +4,7 @@ import argparse
 from dataclasses import dataclass, field
 from pathlib import Path
 
-
-class OptimisationObjective:
-    pass
+from model.constants import OptimisationObjectives
 
 
 @dataclass
@@ -21,12 +19,15 @@ class Arguments:
     battery_degradation_rate: float = field(default_factory=float)
     battery_capex: float = field(default_factory=float)
     solar_capex: float = field(default_factory=float)
-    optimisation_objective: OptimisationObjective = field(default_factory=OptimisationObjective)
+    optimisation_objective: OptimisationObjectives = field(
+        default_factory=OptimisationObjectives
+    )
 
     @classmethod
     def process_arguments(cls, args: argparse.Namespace) -> "Arguments":
         """
-        Takes the command line arguments as an argparse.Namespace object and returns an Arguments dataclass object.
+        Takes the command line arguments as an argparse.Namespace object and returns an Arguments dataclass
+        object.
         :param args:
         :return:
         """

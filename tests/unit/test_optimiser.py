@@ -2,10 +2,10 @@
 File containing tests for the optimiser
 """
 import pandas as pd
-import pytest
 import pulp as pl
+import pytest
 
-from model.constants import OptimisationObjectives, SOLAR_IRRADIANCE, ENERGY_DEMAND
+from model.constants import ENERGY_DEMAND, SOLAR_IRRADIANCE, OptimisationObjectives
 from model.linear_optimiser.optimiser import Optimiser
 
 
@@ -26,16 +26,8 @@ class TestOptimiser:
             solar_size=10,
             solar_capex=100,
             battery_capex=100,
-            energy_demand=pd.DataFrame(
-                {
-                    ENERGY_DEMAND: [1] * 10,
-                }
-            ),
-            solar_irradiance=pd.DataFrame(
-                {
-                    SOLAR_IRRADIANCE: [1] * 10,
-                }
-            )
+            energy_demand=pd.DataFrame({ENERGY_DEMAND: [1] * 10,}),
+            solar_irradiance=pd.DataFrame({SOLAR_IRRADIANCE: [1] * 10,}),
         )
 
     @pytest.fixture(scope="class")
@@ -50,19 +42,13 @@ class TestOptimiser:
             solar_size=10,
             solar_capex=100,
             battery_capex=100,
-            energy_demand=pd.DataFrame(
-                {
-                    ENERGY_DEMAND: [1] * 10,
-                }
-            ),
-            solar_irradiance=pd.DataFrame(
-                {
-                    SOLAR_IRRADIANCE: [1] * 10,
-                }
-            )
+            energy_demand=pd.DataFrame({ENERGY_DEMAND: [1] * 10,}),
+            solar_irradiance=pd.DataFrame({SOLAR_IRRADIANCE: [1] * 10,}),
         )
 
-    def test_optimiser_min_battery_size(self, dummy_optimiser_min_battery_size: Optimiser) -> None:
+    def test_optimiser_min_battery_size(
+        self, dummy_optimiser_min_battery_size: Optimiser
+    ) -> None:
         """
         Test the optimiser successfully builds the optimisation problem. When optimising for the minimum battery size,
         the optimiser should set the solar size as defined in the input arguments (10). Furthermore, the solar and
@@ -98,4 +84,3 @@ class TestOptimiser:
         # Assert
         assert isinstance(dummy_optimiser_min_cost.variables.solar_size, pl.LpVariable)
         assert dummy_optimiser_min_cost.problem is not None
-

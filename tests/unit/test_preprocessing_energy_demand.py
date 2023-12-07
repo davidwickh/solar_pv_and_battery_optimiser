@@ -34,7 +34,9 @@ class TestPreProcessingEnergyDemand:
 
         return df
 
-    def test_filtering_non_half_hourly_data(self, dummy_energy_demand_data: pd.DataFrame) -> None:
+    def test_filtering_non_half_hourly_data(
+        self, dummy_energy_demand_data: pd.DataFrame
+    ) -> None:
         """
         The FilterNonHalfHourlyData class should filter out any data points that are not on the half hour.
 
@@ -50,4 +52,3 @@ class TestPreProcessingEnergyDemand:
         assert filtered_data[DATE_TIME].iloc[0] == pd.to_datetime("2014-05-10 01:00")
         assert filtered_data[DATE_TIME].iloc[1] == pd.to_datetime("2014-05-10 01:30")
         assert filtered_data[DATE_TIME].iloc[-1] == pd.to_datetime("2016-09-01 23:30")
-

@@ -1,7 +1,8 @@
 """
 Util functions used throughout the project.
 """
-from dataclasses import dataclass, field
+import logging
+from dataclasses import dataclass
 
 import pandas as pd
 
@@ -15,8 +16,6 @@ def setup_logger(logging_level: str = "INFO"):
     Args:
         logging_level (str): The logging level to use.
     """
-    import logging
-
     logging.basicConfig(
         level=logging_level,
         format="%(asctime)s %(levelname)s %(message)s",
@@ -36,8 +35,8 @@ class DateTimeToNumeric:
     @classmethod
     def create(cls, datetime_column: pd.Series) -> "DateTimeToNumeric":
         """
-        Creates a DateTimeToNumeric object. Take a datetime column and created a mapping between the datetime and
-        numeric values.
+        Creates a DateTimeToNumeric object. Take a datetime column and created a mapping between the
+        datetime and numeric values.
         :param datetime_column:
         :return:
         """
