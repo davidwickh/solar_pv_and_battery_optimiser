@@ -50,6 +50,12 @@ def main():
         type=Path,
         help="Path to the energy demand profile.",
     )
+    inputs_args.add_argument(
+        "--output_path",
+        type=Path,
+        help="Path to the output directory.",
+        required=True,
+    )
     # Logging level
     arg_parser.add_argument(
         "--logging_level", type=str, default="INFO", help="Logging level to use."

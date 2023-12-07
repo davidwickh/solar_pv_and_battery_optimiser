@@ -106,7 +106,7 @@ class Optimiser:
                 # Battery state of charge must be equal to the previous state plus the electricity flow to the battery
                 # minus the electricity flow from the battery and the degradation
                 battery_degradation = (
-                        battery_degradation_rate * (1 - self.variables.battery_state_of_charge[_t - 1])
+                        battery_degradation_rate * self.variables.battery_state_of_charge[_t - 1]
                 )
                 self.problem += (
                         self.variables.battery_state_of_charge[_t]
@@ -135,12 +135,13 @@ class Optimiser:
                 logger.info(f"Battery cost: {pl.value(self.variables.battery_capacity) * self.battery_capex}")
                 logger.info(f"Solar cost: {pl.value(self.variables.solar_size) * self.solar_capex}")
 
-    def plot_results(self) -> None:
+    def plot_results(self, output_dir: Optional[Path] = None) -> None:
         """
         Method to plot the results of the optimisation problem.
+        :param output_dir: Path to the output directory. If None, will not save the plot.
         """
         # plot results
-        plt.figure(figsize=(10, 5))
+        plt.figure(figsize=(20, 10))
         plt.plot(
             [pl.value(self.variables.battery_state_of_charge[t]) for t in self.time_slices],
             label="Battery state of charge",
@@ -172,6 +173,8 @@ class Optimiser:
         )
         plt.legend()
         plt.show()
+        if output_dir:
+            plt.savefig(output_dir / "optimisation_results.png")
 
     def dump_results(self, output_path: Path) -> None:
         """

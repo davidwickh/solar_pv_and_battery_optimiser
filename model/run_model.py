@@ -69,4 +69,6 @@ def run_model(args: Arguments):
         battery_degradation_rate=args.battery_degradation_rate,
     )
     optimisation.solve()
-    optimisation.plot_results()
+    optimisation.plot_results(
+        output_path=args.output_path,
+    )
