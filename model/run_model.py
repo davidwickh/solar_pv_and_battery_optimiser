@@ -70,5 +70,9 @@ def run_model(args: Arguments):
     )
     optimisation.solve()
     optimisation.plot_results(
-        output_path=args.output_path,
+        output_dir=args.output_path,
     )
+    if args.output_path:
+        optimisation.dump_results(
+            output_path=args.output_path,
+        )

@@ -174,7 +174,8 @@ class Optimiser:
         plt.legend()
         plt.show()
         if output_dir:
-            plt.savefig(output_dir / "optimisation_results.png")
+            # Save the plot
+            plt.savefig(output_dir / "results.png")
 
     def dump_results(self, output_path: Path) -> None:
         """
@@ -191,6 +192,10 @@ class Optimiser:
                     pl.value(self.variables.renewable_electricity_to_house[t])
                     for t in self.time_slices
                 ],
+                "renewable_electricity_to_battery": [
+                    pl.value(self.variables.renewable_electricity_to_battery[t])
+                    for t in self.time_slices
+                ],
                 "battery_electricity_to_house": [
                     pl.value(self.variables.battery_electricity_to_house[t])
                     for t in self.time_slices
@@ -198,6 +203,15 @@ class Optimiser:
                 "total_electricity_to_house": [
                     pl.value(self.variables.battery_electricity_to_house[t])
                     + pl.value(self.variables.renewable_electricity_to_house[t])
+                    for t in self.time_slices
+                ],
+                "energy_demand": [
+                    self.energy_demand.loc[t, ENERGY_DEMAND] for t in self.time_slices
+                ],
+                "solar_generation": [
+                    self.solar_irradiance.loc[t, SOLAR_IRRADIANCE]
+                    * self.variables.solar_size
+                    * 0.5
                     for t in self.time_slices
                 ],
                 "excess_electricity": [
@@ -215,7 +229,7 @@ class Optimiser:
             results["battery_cost"] = pl.value(self.variables.battery_capacity) * self.battery_capex
             results["solar_cost"] = pl.value(self.variables.solar_size) * self.solar_capex
 
-        results.to_csv(output_path, index=False)
+        results.to_csv(Path(output_path, "optimisation_output.csv"), index=False)
 
 
     def _define_problem(self):

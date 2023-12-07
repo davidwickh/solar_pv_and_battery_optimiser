@@ -13,7 +13,7 @@ from utils import setup_logger
 class ValidateOptimisationObjective(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         setattr(namespace, self.dest, values)
-        if values == OptimisationObjectives.MINIMISE_BATTERY_CAP:
+        if namespace.optimisation_objective == OptimisationObjectives.MINIMISE_BATTERY_CAP:
             # Make sure the battery capex and solar capex is not
             if (
                 namespace.battery_capex is None
@@ -42,13 +42,14 @@ def main():
     inputs_args = arg_parser.add_argument_group(title="Inputs")
     # Solar irradiance data
     inputs_args.add_argument(
-        "--solar_irradiance_path", type=Path, help="Path to the solar irradiance data."
+        "--solar_irradiance_path", type=Path, help="Path to the solar irradiance data.", required=True,
     )
     # Energy demand profile
     inputs_args.add_argument(
         "--energy_demand_profile_path",
         type=Path,
         help="Path to the energy demand profile.",
+        required=True,
     )
     inputs_args.add_argument(
         "--output_path",
@@ -95,13 +96,11 @@ def main():
         "--battery_capex",
         type=float,
         help="Battery capex (£/kWh)",
-        required=True,
     )
     optimisation_params.add_argument(
         "--solar_capex",
         type=float,
         help="Solar capex (£/m2)",
-        required=True,
     )
 
     args = arg_parser.parse_args()
