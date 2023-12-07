@@ -61,8 +61,8 @@ class MatchTimeStampsPreProcessor(PreProcessorBase):
         Matches the timestamps of the solar irradiance and energy demand data.
 
         This pre-processing consists of two steps:
-            - The timestamps of the solar irradiance data are hourly, whereas the timestamps of the energy demand data are half-hourly.
-                Therefore, the solar irradiance data is re-sampled to half-hourly.
+            - The timestamps of the solar irradiance data are hourly, whereas the timestamps of the energy demand data
+                are half-hourly. Therefore, the solar irradiance data is re-sampled to half-hourly.
             - The timestamps of the solar irradiance is not in the same year as the energy demand data. Furthermore,
                 the solar irradiance data is only for one year, whereas the energy demand data is for multiple years.
                 Therefore, the solar irradiance data is shifted and repeated to match the timestamps of the energy

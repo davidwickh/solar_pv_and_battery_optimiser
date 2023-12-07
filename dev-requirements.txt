@@ -1,4 +1,5 @@
-requirements.txt
+# also install requirements.txt
+-r requirements.txt
 pytest
 black
 pylint

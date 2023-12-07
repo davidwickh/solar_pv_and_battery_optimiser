@@ -4,3 +4,4 @@ PuLP~=2.7.0
 numpy~=1.26.2
 pytest~=7.4.3
 aenum~=3.1.15
+matplotlib~=3.8.2

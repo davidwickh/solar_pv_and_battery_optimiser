@@ -55,13 +55,18 @@ def run_model(args: Arguments):
     energy_demand_profile = pd.read_csv(temp_dir + "/energy_demand_profile.csv")
     solar_irradiance = pd.read_csv(temp_dir + "/solar_irradiance.csv")
 
-    Optimiser().create_optimisation_problem(
+    optimisation = Optimiser(
+        time_slices=range(len(energy_demand_profile)),
+        optimisation_objective=args.optimisation_objective,
+        solar_size=args.solar_array_size,
         energy_demand=energy_demand_profile,
         solar_irradiance=solar_irradiance,
-        battery_initial_capacity=args.initial_battery_capacity,
-        solar_capacity=args.solar_array_size,
-        optimisation_objective=OptimisationObjectives.MINIMISE_BATTERY_CAP,
-        solar_efficiency=0.15,
-        battery_degradation_rate=0.01,
-        time_slices=range(len(energy_demand_profile)),
+        battery_capex=args.battery_capex,
+        solar_capex=args.solar_capex,
     )
+    optimisation.create_optimisation_problem(
+        battery_initial_capacity=args.initial_battery_capacity,
+        battery_degradation_rate=args.battery_degradation_rate,
+    )
+    optimisation.solve()
+    optimisation.plot_results()
