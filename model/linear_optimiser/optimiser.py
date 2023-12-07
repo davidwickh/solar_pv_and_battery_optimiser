@@ -33,10 +33,13 @@ class Optimiser:
     ):
         """
         Initialises the optimiser by creating the optimiser variables.
-        :param solar_irradiance: Solar irradiance profile (W/m2)
         :param energy_demand: Energy demand profile (kWh)
+        :param solar_irradiance: Solar irradiance profile (W/m2)
         :param time_slices: Time slices to optimise over
         :param optimisation_objective: Optimisation objective
+        :param solar_size: Size of the solar array in m^2 (only used when optimising the battery size)
+        :param solar_capex: Solar capex (£/m2) (only used when optimising the battery and PV costs)
+        :param battery_capex: Battery capex (£/kWh) (only used when optimising the battery and PV costs)
         """
         self.energy_demand = energy_demand
         self.solar_irradiance = solar_irradiance
@@ -47,8 +50,12 @@ class Optimiser:
         )
         self.optimisation_objective = optimisation_objective
         self.time_slices = time_slices
-        self.solar_capex = solar_capex
-        self.battery_capex = battery_capex
+        if self.optimisation_objective == OptimisationObjectives.MINIMISE_BATTERY_AND_SOLAR_COST:
+            self.solar_capex = solar_capex
+            self.battery_capex = battery_capex
+        elif self.optimisation_objective == OptimisationObjectives.MINIMISE_BATTERY_CAP:
+            self.solar_capex = None
+            self.battery_capex = None
 
     def create_optimisation_problem(
             self,
