@@ -7,12 +7,17 @@ import pandas as pd
 import pytest
 
 from model.constants import DATE_TIME, ENERGY_DEMAND, SOLAR_IRRADIANCE
-from model.inputs.pre_processing import MatchTimeStampsPreProcessor
+from model.inputs.pre_processing import PreProcessSolarIrradiance
 
 
 class TestAdjustingSolarIrradianceTimestamp:
     """
-    Class containing tests associated with adjusting the solar irradiance timestamps.
+    Class containing tests associated with adjusting the solar irradiance timestamps. Tests include:
+    - Testing that zero solar irradiance values in the middle of the day are replaced with the irradiance value from
+    the previous day.
+    - Testing that the solar irradiance successfully gets converted from hourly to half-hourly.
+    - Testing that the solar irradiance timestamps are adjusted correctly to match the timestamps of the energy demand
+    data.
     """
 
     @pytest.fixture(scope="class")
@@ -58,7 +63,7 @@ class TestAdjustingSolarIrradianceTimestamp:
         :return: None
         """
         # Arrange
-        match_time_stamps_pre_processor = MatchTimeStampsPreProcessor(
+        match_time_stamps_pre_processor = PreProcessSolarIrradiance(
             dummy_energy_demand_data
         )
 
