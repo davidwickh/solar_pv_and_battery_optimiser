@@ -74,7 +74,9 @@ class OptimiserVariables:
             cat="Continuous",
         )
         cls.battery_capacity = pl.LpVariable(
-            name="battery_capacity", lowBound=0, cat="Continuous",
+            name="battery_capacity",
+            lowBound=0,
+            cat="Continuous",
         )
         if (
             optimisation_objective
@@ -87,7 +89,9 @@ class OptimiserVariables:
                     f" size will be ignored and the solar size will be optimised over."
                 )
             cls.solar_size = pl.LpVariable(
-                name="solar_capacity", lowBound=0, cat="Continuous",
+                name="solar_capacity",
+                lowBound=0,
+                cat="Continuous",
             )
         elif optimisation_objective == OptimisationObjectives.MINIMISE_BATTERY_CAP:
             cls.solar_size = solar_size

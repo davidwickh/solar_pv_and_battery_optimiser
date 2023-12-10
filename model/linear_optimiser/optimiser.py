@@ -79,7 +79,8 @@ class Optimiser:
         """
         self._define_problem()
         self._define_objective_function(
-            battery_capex=self.battery_capex, solar_capex=self.solar_capex,
+            battery_capex=self.battery_capex,
+            solar_capex=self.solar_capex,
         )
         # Define the constraints
         for _t in self.time_slices:

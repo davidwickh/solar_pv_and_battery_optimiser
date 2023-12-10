@@ -59,7 +59,10 @@ def main():
         required=True,
     )
     inputs_args.add_argument(
-        "--output_path", type=Path, help="Path to the output directory.", required=True,
+        "--output_path",
+        type=Path,
+        help="Path to the output directory.",
+        required=True,
     )
     # Logging level
     arg_parser.add_argument(
@@ -96,10 +99,14 @@ def main():
         action=ValidateOptimisationObjective,
     )
     optimisation_params.add_argument(
-        "--battery_capex", type=float, help="Battery capex (£/kWh)",
+        "--battery_capex",
+        type=float,
+        help="Battery capex (£/kWh)",
     )
     optimisation_params.add_argument(
-        "--solar_capex", type=float, help="Solar capex (£/m2)",
+        "--solar_capex",
+        type=float,
+        help="Solar capex (£/m2)",
     )
 
     args = arg_parser.parse_args()

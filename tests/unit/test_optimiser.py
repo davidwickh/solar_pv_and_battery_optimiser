@@ -26,8 +26,16 @@ class TestOptimiser:
             solar_size=10,
             solar_capex=100,
             battery_capex=100,
-            energy_demand=pd.DataFrame({ENERGY_DEMAND: [1] * 10,}),
-            solar_irradiance=pd.DataFrame({SOLAR_IRRADIANCE: [1] * 10,}),
+            energy_demand=pd.DataFrame(
+                {
+                    ENERGY_DEMAND: [1] * 10,
+                }
+            ),
+            solar_irradiance=pd.DataFrame(
+                {
+                    SOLAR_IRRADIANCE: [1] * 10,
+                }
+            ),
         )
 
     @pytest.fixture(scope="class")
@@ -42,8 +50,16 @@ class TestOptimiser:
             solar_size=10,
             solar_capex=100,
             battery_capex=100,
-            energy_demand=pd.DataFrame({ENERGY_DEMAND: [1] * 10,}),
-            solar_irradiance=pd.DataFrame({SOLAR_IRRADIANCE: [1] * 10,}),
+            energy_demand=pd.DataFrame(
+                {
+                    ENERGY_DEMAND: [1] * 10,
+                }
+            ),
+            solar_irradiance=pd.DataFrame(
+                {
+                    SOLAR_IRRADIANCE: [1] * 10,
+                }
+            ),
         )
 
     def test_optimiser_min_battery_size(
