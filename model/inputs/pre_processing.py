@@ -4,7 +4,7 @@ This file contains all code associated with pre-processing the input data.
 
 import pandas as pd
 
-from model.constants import DATE_TIME, SOLAR_IRRADIANCE, ENERGY_DEMAND
+from model.constants import DATE_TIME, ENERGY_DEMAND, SOLAR_IRRADIANCE
 
 
 class PreProcessorBase:
@@ -122,11 +122,17 @@ class PreProcessSolarIrradiance(PreProcessorBase):
         :return: Pre-processed data
         """
         # Convert the timestamp column to a datetime object
-        data_with_converted_timestamp = super().pre_process(data, column=SOLAR_IRRADIANCE)
+        data_with_converted_timestamp = super().pre_process(
+            data, column=SOLAR_IRRADIANCE
+        )
 
-        data_with_converted_timestamp = self.fill_in_zero_values(data_with_converted_timestamp)
+        data_with_converted_timestamp = self.fill_in_zero_values(
+            data_with_converted_timestamp
+        )
 
-        data_with_converted_timestamp = data_with_converted_timestamp.set_index(DATE_TIME)
+        data_with_converted_timestamp = data_with_converted_timestamp.set_index(
+            DATE_TIME
+        )
 
         # re-sample the solar irradiance data to half-hourly
         data_with_converted_timestamp = data_with_converted_timestamp.resample(
@@ -207,13 +213,13 @@ class PreProcessSolarIrradiance(PreProcessorBase):
             # Get the solar irradiance data for the day
             solar_irradiance_day = solar_irradiance[
                 solar_irradiance[DATE_TIME].dt.date == day
-                ]
+            ]
             # Get the previous day
             previous_day = day - pd.Timedelta(days=1)
             # Get the solar irradiance data for the previous day
             solar_irradiance_previous_day = solar_irradiance[
                 solar_irradiance[DATE_TIME].dt.date == previous_day
-                ]
+            ]
             if solar_irradiance_previous_day.empty:
                 continue
             # Loop through each time period
@@ -221,23 +227,18 @@ class PreProcessSolarIrradiance(PreProcessorBase):
                 # Get the solar irradiance value for the time period
                 solar_irradiance_value = solar_irradiance_day[
                     solar_irradiance_day[DATE_TIME].dt.time == time_period
-                    ][SOLAR_IRRADIANCE].values[0]
+                ][SOLAR_IRRADIANCE].values[0]
                 # If the solar irradiance value is zero
                 if solar_irradiance_value == 0:
                     # Get the solar irradiance value for the previous day
                     solar_irradiance_previous_day_value = solar_irradiance_previous_day[
                         solar_irradiance_previous_day[DATE_TIME].dt.time == time_period
-                        ][SOLAR_IRRADIANCE].values[0]
+                    ][SOLAR_IRRADIANCE].values[0]
                     # If the solar irradiance value for the previous day is not zero then replace the value
                     if solar_irradiance_previous_day_value != 0:
                         solar_irradiance.loc[
-                            (
-                                    solar_irradiance[DATE_TIME].dt.date == day
-                            )
-                            & (
-                                    solar_irradiance[DATE_TIME].dt.time
-                                    == time_period
-                            ),
+                            (solar_irradiance[DATE_TIME].dt.date == day)
+                            & (solar_irradiance[DATE_TIME].dt.time == time_period),
                             SOLAR_IRRADIANCE,
                         ] = solar_irradiance_previous_day_value
         return solar_irradiance

@@ -7,7 +7,12 @@ import pandas as pd
 import pulp as pl
 from pulp import LpStatus
 
-from model.constants import ENERGY_DEMAND, SOLAR_IRRADIANCE, OptimisationObjectives, Wh_TO_KWh
+from model.constants import (
+    ENERGY_DEMAND,
+    SOLAR_IRRADIANCE,
+    OptimisationObjectives,
+    Wh_TO_KWh,
+)
 from model.linear_optimiser.variables import OptimiserVariables
 
 logger = logging.getLogger(__name__)
@@ -79,7 +84,8 @@ class Optimiser:
         """
         self._define_problem()
         self._define_objective_function(
-            battery_capex=self.battery_capex, solar_capex=self.solar_capex,
+            battery_capex=self.battery_capex,
+            solar_capex=self.solar_capex,
         )
         # Define the constraints
         for _t in self.time_slices:

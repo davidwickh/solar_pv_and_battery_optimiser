@@ -26,8 +26,8 @@ class Arguments:
     @classmethod
     def process_arguments(cls, args: argparse.Namespace) -> "Arguments":
         """
-        Takes the command line arguments as an argparse.Namespace object and returns an Arguments dataclass
-        object.
+        Takes the command line arguments as an argparse.Namespace object and returns an Arguments
+        dataclass object.
         :param args:
         :return:
         """

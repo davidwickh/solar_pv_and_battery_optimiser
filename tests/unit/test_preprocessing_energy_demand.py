@@ -45,7 +45,9 @@ class TestPreProcessingEnergyDemand:
         df = pd.DataFrame(
             {
                 DATE_TIME: pd.date_range(
-                    start="2014-05-10 00:00", end="2014-05-10 23:30", freq="30min",
+                    start="2014-05-10 00:00",
+                    end="2014-05-10 23:30",
+                    freq="30min",
                 ),
                 ENERGY_DEMAND: np.ones(48),
             }
@@ -54,7 +56,9 @@ class TestPreProcessingEnergyDemand:
         duplicate_timestamps = pd.DataFrame(
             {
                 DATE_TIME: pd.date_range(
-                    start="2014-05-10 00:00", end="2014-05-10 01:00", freq="30min",
+                    start="2014-05-10 00:00",
+                    end="2014-05-10 01:00",
+                    freq="30min",
                 ),
                 ENERGY_DEMAND: [1, 1, 1],
             }
@@ -70,7 +74,9 @@ class TestPreProcessingEnergyDemand:
         df = pd.DataFrame(
             {
                 DATE_TIME: pd.date_range(
-                    start="2014-05-10 00:00", end="2014-05-10 23:30", freq="30min",
+                    start="2014-05-10 00:00",
+                    end="2014-05-10 23:30",
+                    freq="30min",
                 ),
                 ENERGY_DEMAND: np.ones(48),
             }
@@ -79,7 +85,9 @@ class TestPreProcessingEnergyDemand:
         duplicate_timestamps = pd.DataFrame(
             {
                 DATE_TIME: pd.date_range(
-                    start="2014-05-10 00:00", end="2014-05-10 01:00", freq="30min",
+                    start="2014-05-10 00:00",
+                    end="2014-05-10 01:00",
+                    freq="30min",
                 ),
                 ENERGY_DEMAND: [2, 3, 4],
             }
@@ -99,7 +107,9 @@ class TestPreProcessingEnergyDemand:
         """
         # Arrange
         # Act
-        filtered_data = PreProcessEnergyDemand().pre_process(dummy_energy_demand_data_non_hh_timestamp)
+        filtered_data = PreProcessEnergyDemand().pre_process(
+            dummy_energy_demand_data_non_hh_timestamp
+        )
         # Assert
         assert len(filtered_data) == 40606
         assert filtered_data[DATE_TIME].iloc[0] == pd.to_datetime("2014-05-10 01:00")
@@ -118,18 +128,32 @@ class TestPreProcessingEnergyDemand:
         """
         # Arrange
         # Act
-        filtered_data = PreProcessEnergyDemand().pre_process(dummy_energy_demand_data_duplicate_timestamps_same_values)
+        filtered_data = PreProcessEnergyDemand().pre_process(
+            dummy_energy_demand_data_duplicate_timestamps_same_values
+        )
         # Assert
         assert len(filtered_data) == 48
-        assert filtered_data.loc[
-            filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 00:00"), ENERGY_DEMAND
-        ].iloc[0] == 1
-        assert filtered_data.loc[
-            filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 00:30"), ENERGY_DEMAND
-        ].iloc[0] == 1
-        assert filtered_data.loc[
-            filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 01:00"), ENERGY_DEMAND
-        ].iloc[0] == 1
+        assert (
+            filtered_data.loc[
+                filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 00:00"),
+                ENERGY_DEMAND,
+            ].iloc[0]
+            == 1
+        )
+        assert (
+            filtered_data.loc[
+                filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 00:30"),
+                ENERGY_DEMAND,
+            ].iloc[0]
+            == 1
+        )
+        assert (
+            filtered_data.loc[
+                filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 01:00"),
+                ENERGY_DEMAND,
+            ].iloc[0]
+            == 1
+        )
 
     def test_removing_duplicate_timestamps_diff_values(
         self, dummy_energy_demand_data_duplicate_timestamps_diff_values
@@ -144,15 +168,29 @@ class TestPreProcessingEnergyDemand:
         """
         # Arrange
         # Act
-        filtered_data = PreProcessEnergyDemand().pre_process(dummy_energy_demand_data_duplicate_timestamps_diff_values)
+        filtered_data = PreProcessEnergyDemand().pre_process(
+            dummy_energy_demand_data_duplicate_timestamps_diff_values
+        )
         # Assert
         assert len(filtered_data) == 48
-        assert filtered_data.loc[
-            filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 00:00"), ENERGY_DEMAND
-        ].iloc[0] == 1.5
-        assert filtered_data.loc[
-            filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 00:30"), ENERGY_DEMAND
-        ].iloc[0] == 2
-        assert filtered_data.loc[
-            filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 01:00"), ENERGY_DEMAND
-        ].iloc[0] == 2.5
+        assert (
+            filtered_data.loc[
+                filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 00:00"),
+                ENERGY_DEMAND,
+            ].iloc[0]
+            == 1.5
+        )
+        assert (
+            filtered_data.loc[
+                filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 00:30"),
+                ENERGY_DEMAND,
+            ].iloc[0]
+            == 2
+        )
+        assert (
+            filtered_data.loc[
+                filtered_data[DATE_TIME] == pd.to_datetime("2014-05-10 01:00"),
+                ENERGY_DEMAND,
+            ].iloc[0]
+            == 2.5
+        )
