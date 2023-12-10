@@ -7,7 +7,7 @@ import pandas as pd
 import pulp as pl
 from pulp import LpStatus
 
-from model.constants import ENERGY_DEMAND, SOLAR_IRRADIANCE, OptimisationObjectives
+from model.constants import ENERGY_DEMAND, SOLAR_IRRADIANCE, OptimisationObjectives, Wh_TO_KWh
 from model.linear_optimiser.variables import OptimiserVariables
 
 logger = logging.getLogger(__name__)
@@ -89,8 +89,9 @@ class Optimiser:
                 * self.variables.solar_size
                 * solar_efficiency
                 * 0.5
+                * Wh_TO_KWh
             )
-            # Renewable electricity flow to house and battery must equal renewable generation
+            # Renewable electricity flow from PV to house and battery must leq than renewable generation
             self.problem += (
                 self.variables.renewable_electricity_to_house[_t]
                 + self.variables.renewable_electricity_to_battery[_t]
@@ -100,7 +101,7 @@ class Optimiser:
             self.problem += (
                 self.variables.renewable_electricity_to_house[_t]
                 + self.variables.battery_electricity_to_house[_t]
-                == self.energy_demand.loc[_t, ENERGY_DEMAND]
+                >= self.energy_demand.loc[_t, ENERGY_DEMAND]
             )
             # Battery state of charge
             if _t == 0:  # Initial battery state of charge
@@ -240,6 +241,10 @@ class Optimiser:
                     self.solar_irradiance.loc[t, SOLAR_IRRADIANCE]
                     * self.variables.solar_size
                     * 0.5
+                    for t in self.time_slices
+                ],
+                "solar_irradiance": [
+                    self.solar_irradiance.loc[t, SOLAR_IRRADIANCE]
                     for t in self.time_slices
                 ],
                 "excess_electricity": [

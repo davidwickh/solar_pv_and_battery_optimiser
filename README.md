@@ -55,4 +55,3 @@ python run.py --solar_irradiance_path <path_to_solar_irradiance_file> --energy_d
 ```bash
 python run.py --solar_irradiance_path <path_to_solar_irradiance_file> --energy_demand_profile_path <path_to_energy_demand_profile_file> --optimisation_objective "minimise_battery_and_solar_cost" --output_path <path_to_save_results_to> --initial_battery_capacity <initial_battery_capacity> --battery_degredation_rate <battery_degredation_rate> --battery_capex <battery_capex> --solar_capex <solar_capex>
 ```
-

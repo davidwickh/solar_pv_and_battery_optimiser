@@ -5,6 +5,7 @@ SOLAR_IRRADIANCE = "solar_irradiance (W/m)"
 DATE_TIME = "date_time"
 ENERGY_DEMAND = "consumption_kwh"
 SOLAR_GENERATION = "solar_generation"
+Wh_TO_KWh = 1 / 1000
 
 
 class OptimisationObjectives(Constant):
