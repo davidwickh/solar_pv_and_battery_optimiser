@@ -70,7 +70,7 @@ def main():
     optimisation_params.add_argument(
         "--solar_array_size",
         type=float,
-        default=100000.0,
+        default=10000.0,
         help="Size of the solar array in m^2. NOTE should only be used when optimising the battery "
         "size.",
         action=ValidateOptimisationObjective,
