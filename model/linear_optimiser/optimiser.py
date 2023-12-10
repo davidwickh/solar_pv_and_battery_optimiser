@@ -101,7 +101,7 @@ class Optimiser:
             self.problem += (
                 self.variables.renewable_electricity_to_house[_t]
                 + self.variables.battery_electricity_to_house[_t]
-                >= self.energy_demand.loc[_t, ENERGY_DEMAND]
+                == self.energy_demand.loc[_t, ENERGY_DEMAND]
             )
             # Battery state of charge
             if _t == 0:  # Initial battery state of charge
