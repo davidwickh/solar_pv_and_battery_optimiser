@@ -12,8 +12,9 @@ from utils import setup_logger
 
 class ValidateOptimisationObjective(argparse.Action):
     """
-    Custom action to validate the optimisation objective. Ensures that the battery capex and solar
-    capex are specified when optimising the total CAPEX of the system.
+    Custom action to validate the optimisation objective.
+        - If optimising battery size ensures that the solar array size is specified
+        - If optimising total CAPEX ensures that the battery capex and solar capex are specified
     """
 
     def __call__(self, parser, namespace, values, option_string=None):
@@ -22,7 +23,6 @@ class ValidateOptimisationObjective(argparse.Action):
             namespace.optimisation_objective
             == OptimisationObjectives.MINIMISE_BATTERY_CAP
         ):
-            # Make sure the battery capex and solar capex is not
             if namespace.solar_array_size is None:
                 raise argparse.ArgumentTypeError(
                     "Solar array size must be specified when optimising the battery size."
