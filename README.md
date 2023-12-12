@@ -3,13 +3,7 @@
 ## Overview
 This repo contains a solar PV and battery optimiser. The optimisation model is as follows:
 
-\[
-\begin{align*}
-\text{state of charge}_t [\text{kWh}] &= \text{state of charge}_{(t-1)} [\text{kWh}] + \text{elec from pv to battery}_t [\text{kWh}] \\
-&\quad - \text{elec from battery to house}_t [\text{kWh}] - \text{battery degradation}_t [\text{kWh}] \\
-\text{state of charge}_t [\text{kWh}] &\leq \text{max capacity} [\text{kWh}]
-\end{align*}
-\]
+$x=2$
 
 ## Installation
 To install the optimiser, run the following commands:

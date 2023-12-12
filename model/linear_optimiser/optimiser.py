@@ -275,6 +275,8 @@ class Optimiser:
                 pl.value(self.variables.solar_size) * self.solar_capex
             )
 
+        if not output_path.exists():
+            output_path.mkdir(parents=True)
         results.to_csv(Path(output_path, "optimisation_output.csv"), index=False)
 
     def _define_problem(self):

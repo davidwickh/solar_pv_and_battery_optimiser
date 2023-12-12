@@ -23,10 +23,9 @@ class ValidateOptimisationObjective(argparse.Action):
             == OptimisationObjectives.MINIMISE_BATTERY_CAP
         ):
             # Make sure the battery capex and solar capex is not
-            if namespace.battery_capex is None or namespace.solar_capex is None:
+            if namespace.solar_array_size is None:
                 raise argparse.ArgumentTypeError(
-                    "Battery capex and solar capex must be specified when optimising the battery "
-                    "capacity."
+                    "Solar array size must be specified when optimising the battery size."
                 )
         else:
             if namespace.battery_capex is not None or namespace.solar_capex is not None:

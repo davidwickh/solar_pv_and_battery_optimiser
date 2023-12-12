@@ -56,19 +56,19 @@ class PreProcessorBase:
             rows = duplicate_rows[duplicate_rows[DATE_TIME] == timestamp]
             # If there is only one row then add it to the processed data
             if len(rows) == 1:
-                processed_data = processed_data._append(rows)
+                processed_data = pd.concat([processed_data, rows], ignore_index=True)
             # If there are multiple rows then process the rows
             else:
                 # Get the unique values
                 unique_values = rows[column].unique()
                 # If there is only one unique value then add the row to the processed data
                 if len(unique_values) == 1:
-                    processed_data = processed_data._append(rows.drop_duplicates())
+                    processed_data = pd.concat([processed_data, rows.drop_duplicates()], ignore_index=True)
                 # If there are multiple unique values then take the average of the values and add the row to the processed
                 # data
                 else:
                     rows[column] = rows[column].mean()
-                    processed_data = processed_data._append(rows.drop_duplicates())
+                    processed_data = pd.concat([processed_data, rows.drop_duplicates()], ignore_index=True)
         # Combine the processed data with the original data
         processed_data = pd.concat([processed_data, data])
         # Sort the index
