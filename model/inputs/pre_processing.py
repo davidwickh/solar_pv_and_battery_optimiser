@@ -41,16 +41,14 @@ class PreProcessorBase:
         """
         # Find duplicate rows based on the timestamp column
         duplicate_rows = data[data[DATE_TIME].duplicated(keep=False)]
-        # If there are no duplicate rows then return the original dataframe
         if duplicate_rows.empty:
             return data
         # Get the unique timestamps
         unique_timestamps = duplicate_rows[DATE_TIME].unique()
         # Drop the duplicate timestamps from the original dataframe
         data = data[~data[DATE_TIME].isin(unique_timestamps)]
-        # Create a dataframe to store the processed data
+
         processed_data = pd.DataFrame(columns=data.columns)
-        # Iterate over the unique timestamps
         for timestamp in unique_timestamps:
             # Get the rows with the timestamp
             rows = duplicate_rows[duplicate_rows[DATE_TIME] == timestamp]
@@ -63,15 +61,19 @@ class PreProcessorBase:
                 unique_values = rows[column].unique()
                 # If there is only one unique value then add the row to the processed data
                 if len(unique_values) == 1:
-                    processed_data = pd.concat([processed_data, rows.drop_duplicates()], ignore_index=True)
-                # If there are multiple unique values then take the average of the values and add the row to the processed
-                # data
+                    if processed_data.empty:
+                        processed_data = rows.drop_duplicates()
+                    else:
+                        processed_data = pd.concat([processed_data, rows.drop_duplicates()], ignore_index=True)
+                # If multiple values, then take the average
                 else:
                     rows[column] = rows[column].mean()
-                    processed_data = pd.concat([processed_data, rows.drop_duplicates()], ignore_index=True)
-        # Combine the processed data with the original data
+                    if processed_data.empty:
+                        processed_data = rows.drop_duplicates()
+                    else:
+                        processed_data = pd.concat([processed_data, rows.drop_duplicates()], ignore_index=True)
+
         processed_data = pd.concat([processed_data, data])
-        # Sort the index
         processed_data.sort_values(by=DATE_TIME, inplace=True)
         return processed_data
 
