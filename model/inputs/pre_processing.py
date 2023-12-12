@@ -64,14 +64,18 @@ class PreProcessorBase:
                     if processed_data.empty:
                         processed_data = rows.drop_duplicates()
                     else:
-                        processed_data = pd.concat([processed_data, rows.drop_duplicates()], ignore_index=True)
+                        processed_data = pd.concat(
+                            [processed_data, rows.drop_duplicates()], ignore_index=True
+                        )
                 # If multiple values, then take the average
                 else:
                     rows[column] = rows[column].mean()
                     if processed_data.empty:
                         processed_data = rows.drop_duplicates()
                     else:
-                        processed_data = pd.concat([processed_data, rows.drop_duplicates()], ignore_index=True)
+                        processed_data = pd.concat(
+                            [processed_data, rows.drop_duplicates()], ignore_index=True
+                        )
 
         processed_data = pd.concat([processed_data, data])
         processed_data.sort_values(by=DATE_TIME, inplace=True)
