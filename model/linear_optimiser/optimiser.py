@@ -212,7 +212,7 @@ class Optimiser:
             # Save the plot
             plt.savefig(output_dir / "results.png")
 
-    def dump_results(self, output_path: Path) -> None:
+    def dump_results_to_csv(self, output_path: Path) -> None:
         """
         Method to dump the results of the optimisation problem to a csv.
         :param output_path: Path to dump the results to.

@@ -72,6 +72,6 @@ def run_model(args: Arguments):
     #     output_dir=args.output_path,
     # )
     if args.output_path:
-        optimisation.dump_results(
+        optimisation.dump_results_to_csv(
             output_path=args.output_path,
         )
