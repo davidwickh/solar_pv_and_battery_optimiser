@@ -27,18 +27,21 @@ class ValidateOptimisationObjective(argparse.Action):
                 raise argparse.ArgumentTypeError(
                     "Solar array size must be specified when optimising the battery size."
                 )
-        else:
+        elif (
+            namespace.optimisation_objective
+            == OptimisationObjectives.MINIMISE_BATTERY_CAP
+        ):
             if namespace.battery_capex is not None or namespace.solar_capex is not None:
                 raise argparse.ArgumentTypeError(
                     "Battery capex and solar capex must be specified when optimising the battery "
                     "and solar CAPEX."
                 )
-            return values
+        return values
 
 
 def main():
     """
-    Main entry point for the model.
+    Main entry point for the model. Handles the parsing of the arguments and running the model.
     :return:
     """
     arg_parser = argparse.ArgumentParser(description="Model arguments.")
@@ -93,7 +96,9 @@ def main():
         type=str,
         default=OptimisationObjectives.MINIMISE_BATTERY_CAP,
         help="Optimisation objective",
-        choices=[e for e in OptimisationObjectives],
+        choices=[  # pylint: disable=unnecessary-comprehension
+            e for e in OptimisationObjectives  # pylint: disable=not-an-iterable
+        ],
         action=ValidateOptimisationObjective,
     )
     optimisation_params.add_argument(

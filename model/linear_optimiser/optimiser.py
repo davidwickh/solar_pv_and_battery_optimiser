@@ -1,3 +1,6 @@
+"""
+Module containing all code associated with building the linear optimisation problem.
+"""
 import logging
 from pathlib import Path
 from typing import Optional
@@ -18,7 +21,7 @@ from model.linear_optimiser.variables import OptimiserVariables
 logger = logging.getLogger(__name__)
 
 
-class Optimiser:
+class Optimiser:  # pylint: disable=too-many-instance-attributes
     """
     Class containing code associated with the linear optimiser.
     """
@@ -26,7 +29,7 @@ class Optimiser:
     problem: pl.LpProblem = None
     variables: OptimiserVariables
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         energy_demand: pd.DataFrame,
         solar_irradiance: pd.DataFrame,
@@ -71,6 +74,7 @@ class Optimiser:
         battery_degradation_rate: float,
         solar_efficiency: Optional[float] = 0.15,
     ) -> None:
+        # pylint: disable=unsubscriptable-object
         """
         Main entry point to the optimiser. Calls the following functions:
             - define the object function
@@ -141,31 +145,29 @@ class Optimiser:
         """
         if self.problem is None:
             raise ValueError("Optimisation problem has not been defined.")
-        else:
-            self.problem.solve()
-            logger.info(f"Status: {LpStatus[self.problem.status]}")
-            logger.info(f"Objective: {pl.value(self.problem.objective)}")
+        self.problem.solve()
+        logger.info(f"Status: {LpStatus[self.problem.status]}")
+        logger.info(f"Objective: {pl.value(self.problem.objective)}")
+        logger.info(f"Battery capacity: {pl.value(self.variables.battery_capacity)}")
+        logger.info(f"Solar size: {pl.value(self.variables.solar_size)}")
+        if (
+            self.optimisation_objective
+            == OptimisationObjectives.MINIMISE_BATTERY_AND_SOLAR_COST
+        ):
+            logger.info(f"Total cost: {pl.value(self.problem.objective)}")
             logger.info(
-                f"Battery capacity: {pl.value(self.variables.battery_capacity)}"
+                f"Battery cost: {pl.value(self.variables.battery_capacity) * self.battery_capex}"
             )
-            logger.info(f"Solar size: {pl.value(self.variables.solar_size)}")
-            if (
-                self.optimisation_objective
-                == OptimisationObjectives.MINIMISE_BATTERY_AND_SOLAR_COST
-            ):
-                logger.info(f"Total cost: {pl.value(self.problem.objective)}")
-                logger.info(
-                    f"Battery cost: {pl.value(self.variables.battery_capacity) * self.battery_capex}"
-                )
-                logger.info(
-                    f"Solar cost: {pl.value(self.variables.solar_size) * self.solar_capex}"
-                )
+            logger.info(
+                f"Solar cost: {pl.value(self.variables.solar_size) * self.solar_capex}"
+            )
 
     def plot_results(self, output_dir: Optional[Path] = None) -> None:
         """
         Method to plot the results of the optimisation problem.
         :param output_dir: Path to the output directory. If None, will not save the plot.
         """
+        # pylint: disable=unsubscriptable-object
         # plot results
         plt.figure(figsize=(20, 10))
         plt.plot(
@@ -217,6 +219,7 @@ class Optimiser:
         Method to dump the results of the optimisation problem to a csv.
         :param output_path: Path to dump the results to.
         """
+        # pylint: disable=unsubscriptable-object
         results = pd.DataFrame(
             {
                 "battery_state_of_charge": [
