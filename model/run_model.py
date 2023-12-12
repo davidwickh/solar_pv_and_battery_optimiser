@@ -68,9 +68,9 @@ def run_model(args: Arguments):
         battery_degradation_rate=args.battery_degradation_rate,
     )
     optimisation.solve()
-    # optimisation.plot_results(
-    #     output_dir=args.output_path,
-    # )
+    optimisation.plot_results(
+        output_dir=args.output_path,
+    )
     if args.output_path:
         optimisation.dump_results_to_csv(
             output_path=args.output_path,

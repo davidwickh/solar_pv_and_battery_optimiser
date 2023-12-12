@@ -1,9 +1,40 @@
 # Solar PV and Battery Optimiser
 
 ## Overview
-This repo contains a solar PV and battery optimiser. The optimisation model is as follows:
+An example diagram of the optimiser model can be seen in the image and the following equations below:
+![image](https://github.com/davidwickh/solar_pv_and_battery_optimiser/assets/56641696/a850f2d9-fc5e-4e6e-bb0f-831b387f1b1b)
 
-$x=2$
+### Energy Flow Constraints
+$$Demand_{t} [kWh] ≤ Battery to house_{t} [kWh] + PV to House_{t} [kWh] \forall $$
+
+$$Generation_{t} [kWh] ≥ PV to battery_{t} [kWh] + PV to House_{t} [kWh]$$
+
+
+### Battery State of Charge Constraints
+$$State of Charge_{t=0} [kWh] = Initial State of Charge [kWh]$$
+
+$$Battery Degradation_{t} [kWh] = State of Charge_{t} [kWh] ✕ Degradation Rate [Per]$$
+
+$$State of Charge_{t} [kWh] = State of Charge_{t-1} [kWh] + PV to Battery_{t} [kWh] - Battery to House_{t} [kWh] - Battery Degradation_{t} [kWh]$$
+
+$$State of Charge_{t} [kWh] ≤ Battery Capacity [kWh]$$
+
+
+### Solar Generation Constraints
+$$Generation_{t} [kWh] = Solar Irradiance_{t} [W/m2] ✕ Solar PV Size [m2] ✕ Time Slice [h] ✕ Solar Eff [Per] ✕ 0.001 [kWh/Wh]$$
+
+
+### Objective Function
+When minimising for battery capacity:
+
+$$Min (Battery Capacity [kWh])$$
+
+When minimising for total CAPEX:
+
+$$Min ( Solar PV Size [m2] ✕ Solar PV CAPEX [£/m2] + Battery Capacity [kWh] ✕ Battery CAPEX [£/kWh] )$$
+
+
+
 
 ## Installation
 To install the optimiser, run the following commands:
