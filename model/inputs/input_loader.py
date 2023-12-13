@@ -10,7 +10,7 @@ from model.inputs.pre_processing import PreProcessorBase
 logger = logging.getLogger(__name__)
 
 
-class InputLoader:
+class InputLoader:  # pylint: disable=too-few-public-methods
     """
     Class responsible for containing all code associated with reading input data
     """
@@ -32,7 +32,7 @@ class InputLoader:
         try:
             if self.pre_processor is not None:
                 return self.pre_processor.pre_process(pd.read_csv(file_path))
-            else:
-                pd.read_csv(file_path)
+            return pd.read_csv(file_path)
         except IOError:
             logger.error(f"Could not read file at {file_path}")
+            raise

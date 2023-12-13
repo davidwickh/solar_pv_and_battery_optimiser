@@ -1,3 +1,6 @@
+"""
+Module containing all code associated with building the linear optimisation problem.
+"""
 import logging
 from pathlib import Path
 from typing import Optional
@@ -7,13 +10,18 @@ import pandas as pd
 import pulp as pl
 from pulp import LpStatus
 
-from model.constants import ENERGY_DEMAND, SOLAR_IRRADIANCE, OptimisationObjectives
+from model.constants import (
+    ENERGY_DEMAND,
+    SOLAR_IRRADIANCE,
+    OptimisationObjectives,
+    Wh_TO_KWh,
+)
 from model.linear_optimiser.variables import OptimiserVariables
 
 logger = logging.getLogger(__name__)
 
 
-class Optimiser:
+class Optimiser:  # pylint: disable=too-many-instance-attributes
     """
     Class containing code associated with the linear optimiser.
     """
@@ -21,7 +29,7 @@ class Optimiser:
     problem: pl.LpProblem = None
     variables: OptimiserVariables
 
-    def __init__(
+    def __init__(  # pylint: disable=too-many-arguments
         self,
         energy_demand: pd.DataFrame,
         solar_irradiance: pd.DataFrame,
@@ -66,6 +74,7 @@ class Optimiser:
         battery_degradation_rate: float,
         solar_efficiency: Optional[float] = 0.15,
     ) -> None:
+        # pylint: disable=unsubscriptable-object
         """
         Main entry point to the optimiser. Calls the following functions:
             - define the object function
@@ -90,8 +99,9 @@ class Optimiser:
                 * self.variables.solar_size
                 * solar_efficiency
                 * 0.5
+                * Wh_TO_KWh
             )
-            # Renewable electricity flow to house and battery must equal renewable generation
+            # Renewable electricity flow from PV to house and battery must leq than renewable generation
             self.problem += (
                 self.variables.renewable_electricity_to_house[_t]
                 + self.variables.renewable_electricity_to_battery[_t]
@@ -135,31 +145,29 @@ class Optimiser:
         """
         if self.problem is None:
             raise ValueError("Optimisation problem has not been defined.")
-        else:
-            self.problem.solve()
-            logger.info(f"Status: {LpStatus[self.problem.status]}")
-            logger.info(f"Objective: {pl.value(self.problem.objective)}")
+        self.problem.solve()
+        logger.info(f"Status: {LpStatus[self.problem.status]}")
+        logger.info(f"Objective: {pl.value(self.problem.objective)}")
+        logger.info(f"Battery capacity: {pl.value(self.variables.battery_capacity)}")
+        logger.info(f"Solar size: {pl.value(self.variables.solar_size)}")
+        if (
+            self.optimisation_objective
+            == OptimisationObjectives.MINIMISE_BATTERY_AND_SOLAR_COST
+        ):
+            logger.info(f"Total cost: {pl.value(self.problem.objective)}")
             logger.info(
-                f"Battery capacity: {pl.value(self.variables.battery_capacity)}"
+                f"Battery cost: {pl.value(self.variables.battery_capacity) * self.battery_capex}"
             )
-            logger.info(f"Solar size: {pl.value(self.variables.solar_size)}")
-            if (
-                self.optimisation_objective
-                == OptimisationObjectives.MINIMISE_BATTERY_AND_SOLAR_COST
-            ):
-                logger.info(f"Total cost: {pl.value(self.problem.objective)}")
-                logger.info(
-                    f"Battery cost: {pl.value(self.variables.battery_capacity) * self.battery_capex}"
-                )
-                logger.info(
-                    f"Solar cost: {pl.value(self.variables.solar_size) * self.solar_capex}"
-                )
+            logger.info(
+                f"Solar cost: {pl.value(self.variables.solar_size) * self.solar_capex}"
+            )
 
     def plot_results(self, output_dir: Optional[Path] = None) -> None:
         """
         Method to plot the results of the optimisation problem.
         :param output_dir: Path to the output directory. If None, will not save the plot.
         """
+        # pylint: disable=unsubscriptable-object
         # plot results
         plt.figure(figsize=(20, 10))
         plt.plot(
@@ -206,11 +214,12 @@ class Optimiser:
             # Save the plot
             plt.savefig(output_dir / "results.png")
 
-    def dump_results(self, output_path: Path) -> None:
+    def dump_results_to_csv(self, output_path: Path) -> None:
         """
         Method to dump the results of the optimisation problem to a csv.
         :param output_path: Path to dump the results to.
         """
+        # pylint: disable=unsubscriptable-object
         results = pd.DataFrame(
             {
                 "battery_state_of_charge": [
@@ -243,6 +252,10 @@ class Optimiser:
                     * 0.5
                     for t in self.time_slices
                 ],
+                "solar_irradiance": [
+                    self.solar_irradiance.loc[t, SOLAR_IRRADIANCE]
+                    for t in self.time_slices
+                ],
                 "excess_electricity": [
                     pl.value(self.variables.battery_electricity_to_house[t])
                     + pl.value(self.variables.renewable_electricity_to_house[t])
@@ -265,6 +278,8 @@ class Optimiser:
                 pl.value(self.variables.solar_size) * self.solar_capex
             )
 
+        if not output_path.exists():
+            output_path.mkdir(parents=True)
         results.to_csv(Path(output_path, "optimisation_output.csv"), index=False)
 
     def _define_problem(self):

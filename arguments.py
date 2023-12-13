@@ -8,7 +8,7 @@ from model.constants import OptimisationObjectives
 
 
 @dataclass
-class Arguments:
+class Arguments:  # pylint: disable=too-many-instance-attributes
     """Dataclass to process and store command line arguments."""
 
     solar_irradiance_path: Path = field(default_factory=Path)
@@ -26,8 +26,8 @@ class Arguments:
     @classmethod
     def process_arguments(cls, args: argparse.Namespace) -> "Arguments":
         """
-        Takes the command line arguments as an argparse.Namespace object and returns an Arguments dataclass
-        object.
+        Takes the command line arguments as an argparse.Namespace object and returns an Arguments
+        dataclass object.
         :param args:
         :return:
         """

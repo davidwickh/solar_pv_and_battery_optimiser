@@ -9,11 +9,10 @@ from pathlib import Path
 import pandas as pd
 
 from arguments import Arguments
-from model.constants import OptimisationObjectives
 from model.inputs.input_loader import InputLoader
 from model.inputs.pre_processing import (
-    FilterNonHalfHourlyData,
-    MatchTimeStampsPreProcessor,
+    PreProcessEnergyDemand,
+    PreProcessSolarIrradiance,
 )
 from model.linear_optimiser.optimiser import Optimiser
 
@@ -28,11 +27,11 @@ def run_model(args: Arguments):
     """
     logger.info("Running model 🚀")
     # Load the data
-    energy_demand_profile = InputLoader(pre_processor=FilterNonHalfHourlyData()).read(
+    energy_demand_profile = InputLoader(pre_processor=PreProcessEnergyDemand()).read(
         args.energy_demand_profile_path
     )
     solar_irradiance = InputLoader(
-        pre_processor=MatchTimeStampsPreProcessor(
+        pre_processor=PreProcessSolarIrradiance(
             energy_demand_profile=energy_demand_profile
         )
     ).read(args.solar_irradiance_path)
@@ -73,6 +72,6 @@ def run_model(args: Arguments):
         output_dir=args.output_path,
     )
     if args.output_path:
-        optimisation.dump_results(
+        optimisation.dump_results_to_csv(
             output_path=args.output_path,
         )

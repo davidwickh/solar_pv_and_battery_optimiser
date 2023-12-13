@@ -12,8 +12,9 @@ from utils import setup_logger
 
 class ValidateOptimisationObjective(argparse.Action):
     """
-    Custom action to validate the optimisation objective. Ensures that the battery capex and solar
-    capex are specified when optimising the total CAPEX of the system.
+    Custom action to validate the optimisation objective.
+        - If optimising battery size ensures that the solar array size is specified
+        - If optimising total CAPEX ensures that the battery capex and solar capex are specified
     """
 
     def __call__(self, parser, namespace, values, option_string=None):
@@ -22,24 +23,25 @@ class ValidateOptimisationObjective(argparse.Action):
             namespace.optimisation_objective
             == OptimisationObjectives.MINIMISE_BATTERY_CAP
         ):
-            # Make sure the battery capex and solar capex is not
-            if namespace.battery_capex is None or namespace.solar_capex is None:
+            if namespace.solar_array_size is None:
                 raise argparse.ArgumentTypeError(
-                    "Battery capex and solar capex must be specified when optimising the battery "
-                    "capacity."
+                    "Solar array size must be specified when optimising the battery size."
                 )
-        else:
+        elif (
+            namespace.optimisation_objective
+            == OptimisationObjectives.MINIMISE_BATTERY_CAP
+        ):
             if namespace.battery_capex is not None or namespace.solar_capex is not None:
                 raise argparse.ArgumentTypeError(
                     "Battery capex and solar capex must be specified when optimising the battery "
                     "and solar CAPEX."
                 )
-            return values
+        return values
 
 
 def main():
     """
-    Main entry point for the model.
+    Main entry point for the model. Handles the parsing of the arguments and running the model.
     :return:
     """
     arg_parser = argparse.ArgumentParser(description="Model arguments.")
@@ -73,7 +75,6 @@ def main():
     optimisation_params.add_argument(
         "--solar_array_size",
         type=float,
-        default=100.0,
         help="Size of the solar array in m^2. NOTE should only be used when optimising the battery "
         "size.",
         action=ValidateOptimisationObjective,
@@ -95,7 +96,9 @@ def main():
         type=str,
         default=OptimisationObjectives.MINIMISE_BATTERY_CAP,
         help="Optimisation objective",
-        choices=[e for e in OptimisationObjectives],
+        choices=[  # pylint: disable=unnecessary-comprehension
+            e for e in OptimisationObjectives  # pylint: disable=not-an-iterable
+        ],
         action=ValidateOptimisationObjective,
     )
     optimisation_params.add_argument(
