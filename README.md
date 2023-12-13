@@ -54,9 +54,11 @@ pip install -r requirements.txt
 ### Inputs
 The optimiser requires the following inputs:
 1. **Solar irradiance** - the solar irradiance in W/m2. An example of this input can be seen below
+
 ![img.png](docs/img.png)
 - **Energy demand profile** - the energy demand profile in kWh. An example of this input can be seen 
 below
+
 ![img_1.png](docs/img_1.png)
 
 ### Arguments
