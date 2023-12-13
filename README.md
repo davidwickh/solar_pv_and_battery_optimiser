@@ -63,14 +63,14 @@ below
 The optimiser takes the following arguments (these can be seen by running `python run.py --help` in the commandline):
 - `--solar_irradiance_path` (required) - the path to the solar irradiance csv file
 - `--energy_demand_profile_path` (required) - the path to the energy demand profile csv file
-- `--logging_level` - the logging level to use (default is `INFO`)
+- `--logging_level` (default=`INFO`) - the logging level to use
 - `--output_path` (required) - the path to save the optimisation results to 
-- `--solar_array_size` (default=100) - the size of the solar array in m2
+- `--solar_array_size` (required if minimising battery size) - the size of the solar array in m2
 - `--initial_battery_capacity` (default=0.0) - the initial battery capacity in kWh
 - `--battery_degredation_rate` (default=0.01) - the battery degradation rate in kWh of electricity per kWh of battery capacity
 - `--optimisation_objective` (default="minimise_battery_cap") - the optimisation objective to use (either `minimise_battery_cap` or `minimise_battery_and_solar_cost`)
-- `--battery_capex` - the battery capex in £/kWh
-- `--solar_capex` - the solar capex in £/m2
+- `--battery_capex` (required if minimising total CAPEX) - the battery capex in £/kWh
+- `--solar_capex` (required if minimising total CAPEX) - the solar capex in £/m2
 
 ### Outputs
 The optimiser outputs the following:
